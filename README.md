@@ -35,11 +35,15 @@ grupo, en la pantalla de inicio usá:
 
 ### Empezar de cero
 
-Borrá el archivo de la base y en el próximo arranque se vuelve a crear con los datos de ejemplo:
+**Primero pará el servidor** (`Ctrl+C`) y después borrá la carpeta de la base. En el próximo
+arranque se vuelve a crear con los datos de ejemplo:
 
 ```bash
 rm -rf data && npm run dev
 ```
+
+Si la borrás con el servidor prendido, la app queda apuntando a un archivo que ya no existe y las
+consultas fallan hasta que reinicies.
 
 ---
 
