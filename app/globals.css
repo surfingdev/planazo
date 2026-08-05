@@ -1,26 +1,116 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Los colores de la app, en un solo lugar.
+   Si querés cambiarle la cara a Planazo, se cambia acá y nada más. */
+@theme {
+  --color-fondo: #0b0d10;
+  --color-panel: #14181d;
+  --color-panel2: #1b2129;
+  --color-linea: #252c35;
+  --color-tinta: #f2f4f7;
+  --color-suave: #9aa4b2;
+  --color-tenue: #697585;
+  --color-fuego: #ff6b3d;
+  --color-agua: #4dd4e8;
+  --color-verde: #57d9a3;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Piezas que se repiten en toda la app. Están acá para que el JSX de cada
+   pantalla se lea de un tirón y no sea una pared de clases. */
+@layer components {
+  .panel {
+    background: var(--color-panel);
+    border: 1px solid var(--color-linea);
+    border-radius: 1rem;
+  }
+
+  .campo {
+    width: 100%;
+    background: var(--color-fondo);
+    border: 1px solid var(--color-linea);
+    border-radius: 0.75rem;
+    padding: 0.875rem 1rem;
+    font-size: 1.0625rem;
+    color: var(--color-tinta);
+    outline: none;
+  }
+  .campo::placeholder {
+    color: var(--color-tenue);
+  }
+  .campo:focus {
+    border-color: var(--color-fuego);
+  }
+
+  .etiqueta {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-tenue);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: var(--color-fuego);
+    color: #0b0d10;
+    font-size: 1.0625rem;
+    font-weight: 650;
+    border-radius: 0.75rem;
+    padding: 0.9375rem 1.25rem;
+    border: none;
+    cursor: pointer;
+  }
+  .boton:hover {
+    filter: brightness(1.08);
+  }
+  .boton:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  .boton-borde {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: var(--color-tinta);
+    font-size: 1rem;
+    font-weight: 600;
+    border: 1px solid var(--color-linea);
+    border-radius: 0.75rem;
+    padding: 0.8125rem 1.125rem;
+    cursor: pointer;
+  }
+  .boton-borde:hover {
+    border-color: var(--color-fuego);
+    color: var(--color-fuego);
+  }
+
+  .aviso {
+    border-left: 3px solid var(--color-fuego);
+    background: var(--color-panel2);
+    border-radius: 0.5rem;
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--color-suave);
+  }
 }
