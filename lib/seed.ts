@@ -6,16 +6,17 @@
  */
 import { ahora, normalizar, nuevoId, type Adapter } from "./db";
 
-const GRUPO = "Soldados";
-const GENTE = ["Ivo", "Colo", "Tuti", "Feli"];
+const GRUPO = "Raucho";
+const GENTE = ["Ivo", "Bri", "Tom", "Fer", "Jony", "Juli"];
 
 /** [título, quién lo armó, cuándo, puntajes en el orden de GENTE] */
 const PLANES: [string, string, string, (number | null)[]][] = [
-  ["Asado en la terraza de Colo", "Colo", "2026-07-11", [9, null, 10, 9]],
-  ["Bici por el Tigre", "Ivo", "2026-07-19", [8, 7, 6, 8]],
-  ["Escape room del centro", "Tuti", "2026-07-26", [6, 5, 7, 4]],
-  ["Cancha y choripán", "Colo", "2026-08-01", [10, null, 9, 10]],
-  ["Cine un martes a las 3", "Feli", "2026-08-02", [3, 4, 2, 6]],
+  ["Choripán y picada en el parque", "Ivo", "2026-07-04", [9, 8, 10, 7, null, 8]],
+  ["Karaoke en lo de Bri", "Bri", "2026-07-12", [8, 9, 7, null, 8, 9]],
+  ["Pesca al amanecer en el río", "Fer", "2026-07-18", [7, 6, null, 9, 7, 6]],
+  ["Tour de bares por San Telmo", "Juli", "2026-07-26", [6, 7, 8, 8, 9, 10]],
+  ["Partido de fulbito y birras", "Tom", "2026-08-01", [10, 9, null, 10, 8, 9]],
+  ["Roadtrip a la costa en una noche", "Jony", "2026-08-03", [3, 4, 5, 2, 6, 4]],
 ];
 
 /** Marca de tiempo con un segundo de separacion, para que el orden sea estable. */

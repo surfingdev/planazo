@@ -256,7 +256,7 @@ export default async function Grupo({ params, searchParams }: PageProps<"/g/[gru
           <input
             name="usuario"
             className="campo flex-1 !text-base py-3.5"
-            placeholder="Pepito"
+            placeholder="Bri"
             autoComplete="off"
             spellCheck={false}
             required

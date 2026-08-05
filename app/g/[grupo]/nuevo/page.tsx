@@ -51,7 +51,7 @@ export default async function NuevoPlan({
             id="titulo"
             name="titulo"
             className="campo !text-base py-3.5"
-            placeholder="Asado en la terraza de Colo"
+            placeholder="Asado en la terraza de Tom"
             autoComplete="off"
             spellCheck={false}
             required

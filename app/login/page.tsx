@@ -73,7 +73,7 @@ export default async function Login({
                 id="grupo-nuevo"
                 name="grupo"
                 className="campo !text-base py-3.5"
-                placeholder="Soldados"
+                placeholder="Raucho"
                 autoComplete="off"
                 spellCheck={false}
                 required
@@ -114,7 +114,7 @@ export default async function Login({
                 id="grupo-entrar"
                 name="grupo"
                 className="campo !text-base py-3.5"
-                placeholder="Soldados"
+                placeholder="Raucho"
                 autoComplete="off"
                 spellCheck={false}
                 required
@@ -128,7 +128,7 @@ export default async function Login({
                 id="usuario-entrar"
                 name="usuario"
                 className="campo !text-base py-3.5"
-                placeholder="Pepito"
+                placeholder="Jony"
                 autoComplete="off"
                 spellCheck={false}
                 required

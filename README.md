@@ -25,13 +25,13 @@ Abrí <http://localhost:3000> y listo. **No hace falta configurar ninguna base d
 ninguna cuenta.**
 
 La primera vez que la app consulta algo, crea el archivo `data/planazo.db` y lo llena con un grupo
-de ejemplo llamado **Soldados**, con cuatro personas y cinco planes ya puntuados. Para entrar a ese
-grupo, en la pantalla de inicio usá:
+de ejemplo llamado **Raucho**, con seis personas y cinco planes ya puntuados. Para entrar a ese
+grupo, en `/login` usá:
 
 | Campo | Valor |
 | --- | --- |
-| Nombre del grupo | `Soldados` |
-| Tu usuario | `Ivo`, `Colo`, `Tuti` o `Feli` |
+| Nombre del grupo | `Raucho` |
+| Tu usuario | `Ivo`, `Bri`, `Tom`, `Fer` o `Jony` |
 
 ### Empezar de cero
 
