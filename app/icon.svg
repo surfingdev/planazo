@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="24" fill="#FBF2E3"/>
+  <line x1="50" y1="50" x2="97" y2="50" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="90.7" y2="78.5" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="71.5" y2="90.7" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="50" y2="97" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="28.5" y2="90.7" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="9.3" y2="78.5" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="3" y2="50" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="9.3" y2="21.5" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="28.5" y2="9.3" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="50" y2="3" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="71.5" y2="9.3" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="50" x2="90.7" y2="21.5" stroke="#241D1B" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="50" cy="50" r="40" fill="#FFC93D" stroke="#241D1B" stroke-width="6"/>
+  <path d="M78 22 l1.8 3.6 3.8.8 -2.6 3 .4 3.9 -3.4-1.6 -3.4 1.6 .4-3.9 -2.6-3 3.8-.8 Z" fill="#FFFDF6" stroke="#241D1B" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M44 68 L50 81 L56 68 Z" fill="#FF4A2B" stroke="#241D1B" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M36 51 L22 63 L36 63 Z" fill="#FF5FA2" stroke="#241D1B" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M64 51 L78 63 L64 63 Z" fill="#FF5FA2" stroke="#241D1B" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M36 42 C36 28 43 23 50 23 C57 23 64 28 64 42 L64 58 C64 66 57 70 50 70 C43 70 36 66 36 58 Z" fill="#2FD896" stroke="#241D1B" stroke-width="5"/>
+  <circle cx="50" cy="39" r="7" fill="#2FBDE8" stroke="#241D1B" stroke-width="4"/>
+  <circle cx="48" cy="37" r="2.2" fill="#FFFDF6"/>
+</svg>

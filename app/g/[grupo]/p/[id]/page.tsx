@@ -1,104 +1,111 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { accionVotar } from "../../../../actions";
-import { grupoPorNombre, plan, votos } from "../../../../../lib/data";
+import { grupoPorId, plan, votos } from "../../../../../lib/data";
 import { miembroDelGrupo } from "../../../../../lib/session";
+import { BadgeMarca } from "../../../../Marca";
 
 const PUNTAJES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default async function Plan({ params }: PageProps<"/g/[grupo]/p/[id]">) {
-  const { grupo: slug, id } = await params;
+  const { grupo: idGrupo, id } = await params;
 
-  const grupo = await grupoPorNombre(slug);
-  if (!grupo) redirect("/?error=grupo-no-existe");
+  const grupo = await grupoPorId(idGrupo);
+  if (!grupo) redirect("/login?error=grupo-no-existe");
 
   const yo = await miembroDelGrupo(grupo.id);
-  if (!yo) redirect("/?error=no-sos-miembro");
+  if (!yo) redirect("/login?error=no-sos-miembro");
 
   const p = await plan(id);
-  if (!p) redirect(`/g/${grupo.nombre_norm}`);
+  if (!p) redirect(`/g/${grupo.id}`);
 
   const lista = await votos(id);
   const miVoto = lista.find((v) => v.miembro_id === yo.id);
 
   return (
-    <main className="mx-auto w-full max-w-lg px-5 py-10">
-      <Link href={`/g/${grupo.nombre_norm}`} className="text-sm text-tenue hover:text-fuego">
+    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-8">
+      <Link
+        href={`/g/${grupo.id}`}
+        className="chip transition-transform hover:-translate-y-0.5"
+      >
         ← {grupo.nombre}
       </Link>
 
-      <h1 className="mt-4 text-3xl leading-tight font-bold tracking-tight">{p.titulo}</h1>
-      <p className="mt-2 text-suave">
-        Lo armó <strong className="font-semibold text-tinta">{p.armador}</strong>
+      <h1 className="text-balance mt-6 text-4xl leading-tight font-black tracking-tight sm:text-5xl">
+        {p.titulo}
+      </h1>
+      <p className="mt-3 text-lg font-medium text-suave">
+        Lo armó <strong className="font-bold text-tinta">{p.armador}</strong>
       </p>
 
-      {/* -------------------------------------------------------- el promedio */}
-      <div className="panel mt-7 flex items-center gap-5 p-6">
-        <div>
-          <p className="text-6xl leading-none font-bold tabular-nums text-fuego">
+      <div className="mt-9 grid items-stretch gap-7 lg:grid-cols-3">
+        {/* -------------------------------------------------------- el promedio */}
+        <div className="panel relative flex items-center gap-6 overflow-hidden p-7 lg:col-span-1">
+          <BadgeMarca
+            size={52}
+            className="absolute -right-3 -bottom-3 rotate-12 opacity-90"
+          />
+          <div className="text-7xl leading-none font-black tabular-nums text-fuego">
             {p.votos === 0 ? "—" : p.promedio.toFixed(1)}
-          </p>
+          </div>
+          <div className="text-sm leading-relaxed text-suave">
+            {p.votos === 0 ? (
+              <>Todavía no votó nadie. Sé el primero.</>
+            ) : (
+              <>
+                promedio del grupo
+                <br />
+                sobre {p.votos} {p.votos === 1 ? "voto" : "votos"}
+              </>
+            )}
+          </div>
         </div>
-        <div className="text-sm leading-relaxed text-tenue">
-          {p.votos === 0 ? (
-            <>Todavía no votó nadie. Sé el primero.</>
+
+        {/* ------------------------------------------------------------- votar */}
+        <div className="lg:col-span-2">
+          {miVoto ? (
+            <div className="panel flex h-full items-center justify-center gap-4 p-7">
+              <p className="text-lg text-suave">
+                Le pusiste{" "}
+                <span className="font-black text-tinta">un {miVoto.puntaje}</span>.{" "}
+              </p>
+              <span className="burbuja-lg">{miVoto.puntaje}</span>
+            </div>
           ) : (
-            <>
-              promedio del grupo
-              <br />
-              sobre {p.votos} {p.votos === 1 ? "voto" : "votos"}
-            </>
+            <div className="panel flex h-full flex-col justify-center p-7">
+              <h2 className="rotulo text-sm">Ponele un puntaje</h2>
+              <form action={accionVotar} className="mt-5 grid grid-cols-5 gap-3">
+                <input type="hidden" name="grupoId" value={grupo.id} />
+                <input type="hidden" name="planId" value={p.id} />
+                {PUNTAJES.map((n) => (
+                  <button
+                    key={n}
+                    type="submit"
+                    name="puntaje"
+                    value={n}
+                    className="boton-borde justify-center py-5 text-xl font-black"
+                  >
+                    {n}
+                  </button>
+                ))}
+              </form>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ------------------------------------------------------------- votar */}
-      {miVoto ? (
-        <div className="mt-7">
-          <p className="text-xs font-semibold tracking-widest text-tenue uppercase">Tu voto</p>
-          <p className="panel mt-3 p-5 text-suave">
-            Le pusiste{" "}
-            <strong className="text-xl font-bold text-fuego">{miVoto.puntaje}</strong>. Un voto
-            por persona, así que ya está.
-          </p>
-        </div>
-      ) : (
-        <div className="mt-7">
-          <p className="text-xs font-semibold tracking-widest text-tenue uppercase">
-            Ponele un puntaje
-          </p>
-          <form action={accionVotar} className="mt-3 grid grid-cols-5 gap-2">
-            <input type="hidden" name="grupoNorm" value={grupo.nombre_norm} />
-            <input type="hidden" name="planId" value={p.id} />
-            {PUNTAJES.map((n) => (
-              <button
-                key={n}
-                type="submit"
-                name="puntaje"
-                value={n}
-                className="boton-borde justify-center py-4 text-lg font-bold"
-              >
-                {n}
-              </button>
-            ))}
-          </form>
-        </div>
-      )}
-
       {/* ------------------------------------------------------- quién votó */}
       {lista.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-xs font-semibold tracking-widest text-tenue uppercase">
-            Quién votó
-          </h2>
-          <ul className="panel mt-3 divide-y divide-linea">
+        <section className="mt-11">
+          <h2 className="rotulo text-sm">Quién votó</h2>
+          <ul className="panel mt-4 divide-y-2 divide-tinta overflow-hidden">
             {lista.map((v) => (
-              <li key={v.miembro_id} className="flex items-center justify-between px-5 py-3">
-                <span className={v.miembro_id === yo.id ? "font-semibold" : "text-suave"}>
+              <li key={v.miembro_id} className="flex items-center justify-between px-6 py-4">
+                <span className={v.miembro_id === yo.id ? "font-bold" : "text-suave"}>
                   {v.usuario}
                   {v.miembro_id === yo.id ? " (vos)" : ""}
                 </span>
-                <span className="text-lg font-bold tabular-nums text-fuego">{v.puntaje}</span>
+                <span className="burbuja">{v.puntaje}</span>
               </li>
             ))}
           </ul>

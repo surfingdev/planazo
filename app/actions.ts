@@ -7,6 +7,11 @@
  * formulario, sin escribir una sola llamada de red a mano. Cuando falla algo,
  * volvemos a la misma pantalla con el error en la dirección, así no hace falta
  * ningún manejo de estado del lado del navegador.
+ *
+ * Los formularios del grupo mandan el id del grupo (grupoId), nunca su nombre:
+ * así la dirección /g/<id> no delata el nombre del grupo. Aunque el id se
+ * conozca, acá adentro siempre se vuelve a chequear que el que manda el
+ * formulario sea parte de ese grupo.
  */
 
 import { redirect } from "next/navigation";
@@ -15,6 +20,7 @@ import {
   agregarMiembro,
   crearGrupo,
   crearPlan,
+  grupoPorId,
   grupoPorNombre,
   miembroPorUsuario,
   planGrupoId,
@@ -28,93 +34,96 @@ function texto(fd: FormData, campo: string): string {
   return String(fd.get(campo) ?? "").trim();
 }
 
-/* ------------------------------------------------------- entrar y registrarse */
+/* ------------------------------------------- entrar, registrarse y salir */
 
 export async function accionCrearGrupo(fd: FormData) {
   const usuario = texto(fd, "usuario");
   const grupo = texto(fd, "grupo");
-  if (!usuario || !grupo) redirect("/?error=faltan-datos");
+  if (!usuario || !grupo) redirect("/login?error=faltan-datos");
 
   const r = await crearGrupo(grupo, usuario);
-  if ("error" in r) redirect("/?error=grupo-existe");
+  if ("error" in r) redirect("/login?error=grupo-existe");
 
   await guardarSesion(r.miembro.id);
-  redirect(`/g/${r.grupo.nombre_norm}`);
+  redirect(`/g/${r.grupo.id}`);
 }
 
 export async function accionEntrar(fd: FormData) {
   const usuario = texto(fd, "usuario");
   const nombreGrupo = texto(fd, "grupo");
-  if (!usuario || !nombreGrupo) redirect("/?error=faltan-datos");
+  if (!usuario || !nombreGrupo) redirect("/login?error=faltan-datos");
 
   const grupo = await grupoPorNombre(nombreGrupo);
-  if (!grupo) redirect("/?error=grupo-no-existe");
+  if (!grupo) redirect("/login?error=grupo-no-existe");
 
   const miembro = await miembroPorUsuario(grupo.id, usuario);
-  if (!miembro) redirect(`/?error=no-sos-miembro&grupo=${grupo.nombre_norm}`);
+  if (!miembro) redirect("/login?error=no-sos-miembro");
 
   await guardarSesion(miembro.id);
-  redirect(`/g/${grupo.nombre_norm}`);
+  redirect(`/g/${grupo.id}`);
 }
 
 export async function accionSalir() {
   await cerrarSesion();
-  redirect("/");
+  redirect("/login");
 }
 
 /* ------------------------------------------------------------------ invitar */
 
 export async function accionInvitar(fd: FormData) {
-  const grupoNorm = texto(fd, "grupoNorm");
+  const grupoId = texto(fd, "grupoId");
   const usuario = texto(fd, "usuario");
 
-  const grupo = await grupoPorNombre(grupoNorm);
-  if (!grupo) redirect("/");
-  if (!(await miembroDelGrupo(grupo.id))) redirect("/");
+  const grupo = await grupoPorId(grupoId);
+  if (!grupo) redirect("/login");
+  if (!(await miembroDelGrupo(grupo.id))) redirect("/login");
 
   const r = await agregarMiembro(grupo.id, usuario);
-  if ("error" in r) redirect(`/g/${grupoNorm}?error=${r.error}`);
+  if ("error" in r) redirect(`/g/${grupo.id}?error=${r.error}`);
 
-  revalidatePath(`/g/${grupoNorm}`);
-  redirect(`/g/${grupoNorm}?invitado=${encodeURIComponent(r.usuario)}`);
+  revalidatePath(`/g/${grupo.id}`);
+  redirect(`/g/${grupo.id}?invitado=${encodeURIComponent(r.usuario)}`);
 }
 
 /* -------------------------------------------------------------- planes y votos */
 
 export async function accionCrearPlan(fd: FormData) {
-  const grupoNorm = texto(fd, "grupoNorm");
+  const grupoId = texto(fd, "grupoId");
   const titulo = texto(fd, "titulo");
   const armadorId = texto(fd, "armadorId");
   const fecha = texto(fd, "fecha");
 
-  const grupo = await grupoPorNombre(grupoNorm);
-  if (!grupo) redirect("/");
-  if (!(await miembroDelGrupo(grupo.id))) redirect("/");
+  const grupo = await grupoPorId(grupoId);
+  if (!grupo) redirect("/login");
+  if (!(await miembroDelGrupo(grupo.id))) redirect("/login");
 
   if (!titulo || !armadorId || !fecha) {
-    redirect(`/g/${grupoNorm}/nuevo?error=faltan-datos`);
+    redirect(`/g/${grupo.id}/nuevo?error=faltan-datos`);
   }
 
   const id = await crearPlan(grupo.id, armadorId, titulo, fecha);
-  revalidatePath(`/g/${grupoNorm}`);
-  redirect(`/g/${grupoNorm}/p/${id}`);
+  revalidatePath(`/g/${grupo.id}`);
+  redirect(`/g/${grupo.id}/p/${id}`);
 }
 
 export async function accionVotar(fd: FormData) {
-  const grupoNorm = texto(fd, "grupoNorm");
+  const grupoId = texto(fd, "grupoId");
   const planId = texto(fd, "planId");
   const puntaje = Number(texto(fd, "puntaje"));
 
-  const grupoDelPlan = await planGrupoId(planId);
-  if (!grupoDelPlan) redirect("/");
+  const grupo = await grupoPorId(grupoId);
+  if (!grupo) redirect("/login");
 
-  const yo = await miembroDelGrupo(grupoDelPlan);
-  if (!yo) redirect("/");
+  const yo = await miembroDelGrupo(grupo.id);
+  if (!yo) redirect("/login");
+
+  // El plan tiene que ser de verdad de este grupo, por más largo que sea el id.
+  if ((await planGrupoId(planId)) !== grupo.id) redirect("/login");
 
   await votar(planId, yo.id, puntaje);
-  revalidatePath(`/g/${grupoNorm}`);
-  revalidatePath(`/g/${grupoNorm}/p/${planId}`);
-  redirect(`/g/${grupoNorm}/p/${planId}`);
+  revalidatePath(`/g/${grupo.id}`);
+  revalidatePath(`/g/${grupo.id}/p/${planId}`);
+  redirect(`/g/${grupo.id}/p/${planId}`);
 }
 
 /* ---------------------------------------------------------------------- IA */
@@ -127,8 +136,8 @@ export async function accionSugerir(
   _anterior: Resultado | null,
   fd: FormData,
 ): Promise<Resultado> {
-  const grupoNorm = texto(fd, "grupoNorm");
-  const grupo = await grupoPorNombre(grupoNorm);
+  const grupoId = texto(fd, "grupoId");
+  const grupo = await grupoPorId(grupoId);
   if (!grupo) return { ok: false, motivo: "falló", detalle: "No encontré el grupo." };
 
   const yo = await sesion();

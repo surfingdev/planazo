@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0d10",
+  themeColor: "#fbf2e3",
 };
 
 // Tipografía del sistema a propósito: así la app abre igual sin internet.

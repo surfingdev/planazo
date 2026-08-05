@@ -89,9 +89,10 @@ vercel
 
 Ese comando crea el proyecto y te devuelve una dirección. Después queda una sola cosa por hacer.
 
-**Hace falta un Postgres.** En Vercel el disco es de solo lectura, así que SQLite no sirve una vez
-publicado: los datos se perderían en cada arranque. Creá una base Postgres (Neon, Vercel Postgres o
-Supabase, las tres andan) y cargá su dirección:
+**Hace falta un Postgres.** Publicado, el proyecto corre en otra computadora, y el archivo
+`data/planazo.db` de tu máquina no está ahí: lo único que se sube es el código. Los datos tienen que
+vivir en una base prendida aparte. Creá una Postgres (Neon, Vercel Postgres o Supabase, las tres
+andan) y cargá su dirección:
 
 ```bash
 vercel env add DATABASE_URL production
@@ -115,7 +116,8 @@ funciona así está en [AGENTS.md](AGENTS.md).
 
 ```
 app/
-  page.tsx                     entrar o armar un grupo
+  page.tsx                     puerta de sesión: te manda a /login o a tu grupo
+  login/page.tsx               entrar o armar un grupo (crea la sesión)
   actions.ts                   todo lo que escribe en la base
   g/[grupo]/page.tsx           el grupo: podio, planes, invitar, IA
   g/[grupo]/Sugerencias.tsx    el único componente que corre en el navegador
@@ -131,6 +133,17 @@ lib/
   seed.ts                      los datos de ejemplo
 data/planazo.db                la base local (no se sube al repo)
 ```
+
+### Sesión y rutas
+
+No hay contraseñas: entrar o armar un grupo guarda tu id de miembro en una cookie
+(`planazo`, un año de vida). Con eso:
+
+- `/` te redirige a `/login` si no tenés sesión, o a tu grupo si ya entraste.
+- `/login` es la única puerta: armar un grupo o entrar a uno.
+- `/g/<id>` es la vista de un grupo. La URL usa el **id ofuscado** (16 caracteres
+  aleatorios), nunca el nombre, para no delatar el grupo en la barra de dirección.
+- **Salir** borra la cookie y te vuelve a `/login`.
 
 ## Las cuatro tablas
 

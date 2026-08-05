@@ -1,66 +1,103 @@
 @import "tailwindcss";
 
-/* Los colores de la app, en un solo lugar.
-   Si querés cambiarle la cara a Planazo, se cambia acá y nada más. */
+/* ------------------------------------------------------------------ tema
+   Candy arcade retro: crema de fondo, tinta para los bordes gordos y
+   colores de feria. Si querés cambiarle la cara a Planazo, se cambia acá y
+   nada más. */
+
 @theme {
-  --color-fondo: #0b0d10;
-  --color-panel: #14181d;
-  --color-panel2: #1b2129;
-  --color-linea: #252c35;
-  --color-tinta: #f2f4f7;
-  --color-suave: #9aa4b2;
-  --color-tenue: #697585;
-  --color-fuego: #ff6b3d;
-  --color-agua: #4dd4e8;
-  --color-verde: #57d9a3;
+  --color-papel: #fbf2e3;
+  --color-blanco: #fffdf6;
+  --color-tinta: #241d1b;
+  --color-suave: #6e5f55;
+  --color-tenue: #a09084;
+  --color-linea: #241d1b;
+
+  --color-fuego: #ff4a2b;
+  --color-agua: #2fbde8;
+  --color-verde: #2fd896;
+  --color-rosa: #ff5fa2;
+  --color-amarillo: #ffc93d;
+  --color-violeta: #8e5cf7;
+
+  /* Alias para que no rompa nada que ya usaba "fondo" */
+  --color-fondo: #fbf2e3;
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
     Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 }
 
+html {
+  color-scheme: light;
+}
+
 html,
 body {
-  background: var(--color-fondo);
+  background: var(--color-papel);
   color: var(--color-tinta);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Puntitos de fondo, como papel cuadriculado de feria. Van en el background
+   del body (siempre detrás de todo) y NUNCA en un pseudo fijo: un elemento
+   posicionado se pinta por encima de las cards y los puntos se ven adentro. */
+body {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-tinta) 22%, transparent) 1.6px,
+    transparent 1.6px
+  );
+  background-size: 26px 26px;
+}
+
+::selection {
+  background: var(--color-amarillo);
+  color: var(--color-tinta);
 }
 
 /* Piezas que se repiten en toda la app. Están acá para que el JSX de cada
    pantalla se lea de un tirón y no sea una pared de clases. */
 @layer components {
   .panel {
-    background: var(--color-panel);
-    border: 1px solid var(--color-linea);
-    border-radius: 1rem;
+    background: var(--color-blanco);
+    border: 3px solid var(--color-tinta);
+    border-radius: 1.25rem;
+    box-shadow: 6px 6px 0 var(--color-tinta);
   }
 
   .campo {
     width: 100%;
-    background: var(--color-fondo);
-    border: 1px solid var(--color-linea);
-    border-radius: 0.75rem;
-    padding: 0.875rem 1rem;
+    background: var(--color-blanco);
+    border: 3px solid var(--color-tinta);
+    border-radius: 0.9rem;
+    padding: 0.8125rem 1rem;
     font-size: 1.0625rem;
     color: var(--color-tinta);
-    outline: none;
   }
   .campo::placeholder {
     color: var(--color-tenue);
   }
   .campo:focus {
-    border-color: var(--color-fuego);
+    outline: 3px solid var(--color-agua);
+    outline-offset: 2px;
   }
 
   .etiqueta {
-    display: block;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-tenue);
-    font-weight: 600;
+    color: var(--color-tinta);
+    font-weight: 800;
     margin-bottom: 0.5rem;
+  }
+  .etiqueta::before {
+    content: "✦";
+    color: var(--color-fuego);
   }
 
   .boton {
@@ -70,20 +107,32 @@ body {
     gap: 0.5rem;
     width: 100%;
     background: var(--color-fuego);
-    color: #0b0d10;
+    color: var(--color-tinta);
     font-size: 1.0625rem;
-    font-weight: 650;
-    border-radius: 0.75rem;
-    padding: 0.9375rem 1.25rem;
-    border: none;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    border: 3px solid var(--color-tinta);
+    border-radius: 1rem;
+    padding: 0.875rem 1.25rem;
+    box-shadow: 5px 5px 0 var(--color-tinta);
     cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    touch-action: manipulation;
   }
   .boton:hover {
-    filter: brightness(1.08);
+    transform: translate(-1px, -1px);
+    box-shadow: 7px 7px 0 var(--color-tinta);
+  }
+  .boton:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--color-tinta);
   }
   .boton:disabled {
     opacity: 0.55;
     cursor: default;
+    transform: none;
+    box-shadow: 5px 5px 0 var(--color-tinta);
   }
 
   .boton-borde {
@@ -91,26 +140,174 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: transparent;
+    background: var(--color-blanco);
     color: var(--color-tinta);
     font-size: 1rem;
-    font-weight: 600;
-    border: 1px solid var(--color-linea);
-    border-radius: 0.75rem;
+    font-weight: 700;
+    border: 3px solid var(--color-tinta);
+    border-radius: 1rem;
     padding: 0.8125rem 1.125rem;
+    box-shadow: 4px 4px 0 var(--color-tinta);
     cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease,
+      background-color 0.08s ease;
+    touch-action: manipulation;
   }
   .boton-borde:hover {
-    border-color: var(--color-fuego);
-    color: var(--color-fuego);
+    background: var(--color-amarillo);
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 var(--color-tinta);
+  }
+  .boton-borde:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-tinta);
   }
 
   .aviso {
-    border-left: 3px solid var(--color-fuego);
-    background: var(--color-panel2);
-    border-radius: 0.5rem;
+    border: 3px solid var(--color-tinta);
+    background: var(--color-amarillo);
+    border-radius: 1rem;
     padding: 0.875rem 1rem;
     font-size: 0.9375rem;
-    color: var(--color-suave);
+    color: var(--color-tinta);
+    box-shadow: 4px 4px 0 var(--color-tinta);
+  }
+
+  /* Encabezado de sección: chiquito, en mayúscula, con estrellita. */
+  .rotulo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-tinta);
+  }
+  .rotulo::before {
+    content: "★";
+    color: var(--color-fuego);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 2px solid var(--color-tinta);
+    background: var(--color-blanco);
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  /* Burbuja de puntaje: el número grande de cada plan. */
+  .burbuja {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.25rem;
+    height: 2.75rem;
+    padding: 0 0.6rem;
+    border: 3px solid var(--color-tinta);
+    border-radius: 0.9rem;
+    background: var(--color-amarillo);
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 3px 3px 0 var(--color-tinta);
+  }
+
+  .burbuja-lg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.5rem;
+    height: 3.75rem;
+    padding: 0 0.9rem;
+    border: 3px solid var(--color-tinta);
+    border-radius: 1.15rem;
+    background: var(--color-amarillo);
+    font-size: 1.875rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 4px 4px 0 var(--color-tinta);
+  }
+
+  .sello {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 2px dashed var(--color-tinta);
+    border-radius: 0.6rem;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-tinta);
+    background: var(--color-blanco);
+  }
+}
+
+/* Palabra "PLANAZO" del logo: pesada, apretada, con un toque de rotación. */
+.palabra {
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* Decoraciones que flotan en el home. */
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--rot, 0deg));
+  }
+}
+.flotar {
+  animation: flotar 5s ease-in-out infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.girar-lento {
+  animation: girar 22s linear infinite;
+}
+
+@keyframes rebotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.rebotar {
+  animation: rebotar 0.7s ease-in-out infinite;
+}
+
+/* Enfoque visible para todo lo interactivo. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-agua);
+  outline-offset: 2px;
+}
+
+/* Respeto por quien prefiere menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
   }
 }
